@@ -14,18 +14,12 @@
         android:text="subscribeOn vs observeOn"
         android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/test2_send_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send empty"
-        android:textAllCaps="false" />
 
-
-    <TextView
-        android:id="@+id/tip"
+    <ProgressBar
+        android:id="@+id/loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
 </LinearLayout>

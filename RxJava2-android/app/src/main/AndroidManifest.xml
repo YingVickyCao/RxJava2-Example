@@ -11,8 +11,6 @@
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
 
         <activity android:name=".MainActivity"/>
-        <activity android:name=".AlwaysDoOnNextQAActivity"/>
-        <activity android:name=".AlwaysDoOnNextSolutionActivity"/>
 
     </application>
 
