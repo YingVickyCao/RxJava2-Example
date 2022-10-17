@@ -259,3 +259,4 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 # Refs
 
 - https://gank.io/post/560e15be2dca930e00da1083#toc_2
+- [Timer, Delay, and Interval Operators](https://blog.mindorks.com/understanding-rxjava-timer-delay-and-interval-operators)

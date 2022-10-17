@@ -8,7 +8,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -17,6 +16,12 @@ public class TimerExample {
     private static final String TAG = "TimerExample";
 
     public static void test() {
+        way1();
+        way2();
+    }
+
+    // Recommended
+    private static void way1() {
         Log.d(TAG, "test: -->");
 
         /**
@@ -52,22 +57,25 @@ public class TimerExample {
                         Log.d(TAG, "Received:" + s + "," + Thread.currentThread().getName());
                     }
                 });
+        Log.d(TAG, "test: <--");
+    }
 
+    private static void way2() {
+        Log.d(TAG, "test: -->");
         /**
          * 2022-10-17 11:59:22.346 21940-21940/D/TimerExample: test: -->
          * 2022-10-17 11:59:22.367 21940-21940/D/TimerExample: test: <--
          * 2022-10-17 11:59:27.373 21940-22014/D/TimerExample: Received:0,RxCachedThreadScheduler-1
          */
-//        Observable.timer(5, TimeUnit.SECONDS)
-//                .observeOn(Schedulers.io())
-//                .subscribeOn(Schedulers.single())
-//                .subscribe(new Consumer<Long>() {
-//                    @Override
-//                    public void accept(Long value) throws Exception {
-//                        Log.d(TAG, "Received:" + value + "," + Thread.currentThread().getName());
-//                    }
-//                });
-//
+        Observable.timer(5, TimeUnit.SECONDS)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.single())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long value) throws Exception {
+                        Log.d(TAG, "Received:" + value + "," + Thread.currentThread().getName());
+                    }
+                });
         Log.d(TAG, "test: <--");
     }
 }
