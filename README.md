@@ -204,15 +204,21 @@ public void dispose() {
 
 # 3 操作符
 
-- debounce  
-  控制频率： 防止输入过快。
+## debounce
 
-- flatMap  
-  数据变换：从一个 Observable 对象转化为一个 Observable 对象，后续继续对它进行操作。
-- EndlessSubscribe ：  
-  得到：订阅前的最后一个 + 开始订阅后。。。。
+控制频率： 防止输入过快。
+
+## flatMap
+
+数据变换：从一个 Observable 对象转化为一个 Observable 对象，后续继续对它进行操作。
+
+## EndlessSubscribe ：
+
+得到：订阅前的最后一个 + 开始订阅后。。。。
 
 ## Interval
+
+[Code: IntervalExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/IntervalExample.java)
 
 ```java
 // IntervalExample
@@ -228,19 +234,27 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 
 ## zip
 
+[Code: ZipExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/ZipExample.java)
+
 - 并发请求
 - 场景：同时访问多个接口，顺序无关
 - 当两个请求都获取成功的时候才算成功，如果有一个没获取成功则算失败，需要重新获取。
 
 ## Delay
 
+[Code: DelayExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/DelayExample.java)
+
 - When is used ?  
   do the work, then postpone the value to subscriber
+- subscribeOn set works.
 
 ## Timer
 
+[Code: TimerExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/TimerExample.java)
+
 - When is used?  
   do the work after a certain amount of time, and then emit the value to subscriber
+- subscribeOn default is Schedulers.computation(),if set others, not works.
 
 # Refs
 
