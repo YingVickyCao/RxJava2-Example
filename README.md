@@ -232,6 +232,16 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 - 场景：同时访问多个接口，顺序无关
 - 当两个请求都获取成功的时候才算成功，如果有一个没获取成功则算失败，需要重新获取。
 
+## Delay
+
+- When is used ?  
+  do the work, then postpone the value to subscriber
+
+## Timer
+
+- When is used?  
+  do the work after a certain amount of time, and then emit the value to subscriber
+
 # Refs
 
 - https://gank.io/post/560e15be2dca930e00da1083#toc_2

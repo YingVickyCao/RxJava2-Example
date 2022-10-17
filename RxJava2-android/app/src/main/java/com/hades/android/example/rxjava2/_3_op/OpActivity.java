@@ -17,6 +17,7 @@ public class OpActivity extends Activity {
         example = new ZipExample();
 
         findViewById(R.id.delay).setOnClickListener(v -> DelayExample.test());
+        findViewById(R.id.timer).setOnClickListener(v -> TimerExample.test());
 
     }
 

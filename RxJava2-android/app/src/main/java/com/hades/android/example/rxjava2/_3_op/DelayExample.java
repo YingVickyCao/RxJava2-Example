@@ -14,7 +14,7 @@ public class DelayExample {
     private static final String TAG = "DelayExample";
 
     /**
-     * When is used ? We want to postpone the value’s emission to the subscriber,
+     * When is used ? We’re doing some work and then emitting a value, but we want to postpone the value’s emission to the subscriber.
      * Conclusion：Observable send a message, then after 5 seconds, consumer receives the message.
      * Log：
      * 2022-10-17 11:26:22.572 20219-20219/D/DelayExample: test,-->
@@ -27,6 +27,7 @@ public class DelayExample {
         Observable.create(new ObservableOnSubscribe<String>() {
                     @Override
                     public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                        // Do the work, and get the result
                         Log.d(TAG, "Sent" + Thread.currentThread().getName());
                         emitter.onNext("Delay Message");
                         emitter.onComplete();
@@ -35,7 +36,7 @@ public class DelayExample {
                 // Way 1 and Way 2 is the same result
                 // Way 1, START
                 .subscribeOn(Schedulers.io())
-                .delay(5, TimeUnit.SECONDS)
+                .delay(5, TimeUnit.SECONDS) // After 5 seconds, send the result to consumer
                 // Way 1, END
                 // Way 2, START
 //                .delay(5, TimeUnit.SECONDS)
