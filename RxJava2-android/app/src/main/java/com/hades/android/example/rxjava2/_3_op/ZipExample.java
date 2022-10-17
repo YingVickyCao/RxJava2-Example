@@ -36,15 +36,15 @@ public class ZipExample {
                 : requestScore();
 
         Observable.zip(response1, response2, new BiFunction<String, Integer, StuResponse>() {
-            @Override
-            public StuResponse apply(@NonNull String name, @NonNull Integer score) throws Exception {
-                Log.d(TAG, "apply:name=" + name + ",score=" + score);
-                memoryCache_Name = name;
-                memoryCache_score = score;
-                StuResponse response = new StuResponse(name, score);
-                return response;
-            }
-        }).subscribeOn(Schedulers.io())
+                    @Override
+                    public StuResponse apply(@NonNull String name, @NonNull Integer score) throws Exception {
+                        Log.d(TAG, "apply:name=" + name + ",score=" + score);
+                        memoryCache_Name = name;
+                        memoryCache_score = score;
+                        StuResponse response = new StuResponse(name, score);
+                        return response;
+                    }
+                }).subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.single())
                 .subscribe(new Observer<StuResponse>() {
                     @Override

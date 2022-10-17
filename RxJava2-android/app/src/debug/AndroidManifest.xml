@@ -4,10 +4,11 @@
     package="com.hades.android.example.rxjava2">
 
     <application tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="._3_op.ZipActivity">
+        <activity
+            android:name="._3_op.OpActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
