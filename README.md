@@ -246,6 +246,23 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 
 - When is used ?  
   do the work, then postpone the value to subscriber
+
+```
+// Recommended
+// Way 1:do the work -> after 5 seconds -> emit the result
+.//Work
+.delay(5, TimeUnit.SECONDS)
+.subscribe()
+```
+
+```
+// Depressed :
+// Way 2:After 5 seconds -> do the work, then  emit the result
+.delay(5, TimeUnit.SECONDS)
+. // Work
+.subscribe()
+```
+
 - subscribeOn set works.
 
 ## Timer
@@ -253,10 +270,20 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 [Code: TimerExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/TimerExample.java)
 
 - When is used?  
-  do the work after a certain amount of time, and then emit the value to subscriber
+   do the work after a certain amount of time, and then emit the value to subscriber
+
+  ```
+  // After 5 seconds -> do the work, then  emit the result
+  .Observable.timer(5, TimeUnit.SECONDS)
+  . // Work
+  .subscribe()
+  ```
+
+```
 - subscribeOn default is Schedulers.computation(),if set others, not works.
 
 # Refs
 
 - https://gank.io/post/560e15be2dca930e00da1083#toc_2
 - [Timer, Delay, and Interval Operators](https://blog.mindorks.com/understanding-rxjava-timer-delay-and-interval-operators)
+```

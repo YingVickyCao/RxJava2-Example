@@ -15,14 +15,16 @@ import java.util.concurrent.TimeUnit;
 public class DelayExample {
     private static final String TAG = "DelayExample";
 
-    // When is used ? We’re doing some work and then emitting a value, but we want to postpone the value’s emission to the subscriber.
+    /**
+     * When is used ? We’re doing some work and then emitting a value, but we want to postpone the value’s emission to the subscriber.
+     */
     public static void test() {
 //        way1();
 //        way2();
         way3();
     }
 
-    // do the work -> after 5 seconds -> emit the result
+    // Recommended : do the work -> after 5 seconds -> emit the result
     public static void way1() {
         Log.d(TAG, "test,--> ");
         /**
@@ -61,7 +63,7 @@ public class DelayExample {
         Log.d(TAG, "test,<-- ");
     }
 
-    // Do the work -> then after 5 seconds -> emit the result
+    // Recommended : Do the work -> then after 5 seconds -> emit the result
     public static void way2() {
         Log.d(TAG, "test,--> ");
         /*
@@ -100,7 +102,8 @@ public class DelayExample {
         Log.d(TAG, "test,<-- ");
     }
 
-    // After 5 seconds -> do the work, then  emit the result
+    // Depressed : After 5 seconds -> do the work, then  emit the result
+    // This way works as same as timer
     public static void way3() {
         Log.d(TAG, "test,--> ");
         /*

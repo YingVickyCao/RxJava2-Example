@@ -15,21 +15,22 @@ import io.reactivex.schedulers.Schedulers;
 public class TimerExample {
     private static final String TAG = "TimerExample";
 
+    /**
+     * When is used: we want to do the work after a certain amount of time, and then emit the value
+     */
     public static void test() {
         way1();
         way2();
     }
 
-    // Recommended
+    // Recommended : after 5 seconds -> do the work, then emit the value
     private static void way1() {
         Log.d(TAG, "test: -->");
 
         /**
-         * When is used: we want to do the work after a certain amount of time, and then emit the value
-         */
-        /**
          * 2022-10-17 13:23:33.316 5924-5924/D/TimerExample: test: -->
          * 2022-10-17 13:23:33.337 5924-5924/D/TimerExample: test: <--
+         *
          * 2022-10-17 13:23:38.352 5924-5957/D/TimerExample: send - apply: 0,RxComputationThreadPool-1
          * 2022-10-17 13:23:38.353 5924-5957/D/TimerExample: send - subscribe: 0,RxComputationThreadPool-1
          * 2022-10-17 13:23:38.356 5924-5958/D/TimerExample: Received:0,RxCachedThreadScheduler-1
