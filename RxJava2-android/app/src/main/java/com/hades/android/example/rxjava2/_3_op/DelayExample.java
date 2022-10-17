@@ -6,6 +6,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -20,11 +21,13 @@ public class DelayExample {
      */
     public static void test() {
 //        way1();
-//        way2();
-        way3();
+//        way2_onNext_onComplete();
+//        way2_emit_onError();
+//        way3_emit_onNext_onComplete();
+        way3_onError();
     }
 
-    // Recommended : do the work -> after 5 seconds -> emit the result
+    // Recommended : do the work, emit the onNext/onComplete -> after 5 seconds -> receive onNext/onComplete
     public static void way1() {
         Log.d(TAG, "test,--> ");
         /**
@@ -39,7 +42,7 @@ public class DelayExample {
                     @Override
                     public void subscribe(ObservableEmitter<String> emitter) throws Exception {
                         // Do the work, and get the result
-                        Log.d(TAG, "Sent" + Thread.currentThread().getName());
+                        Log.d(TAG, "Sent: " + Thread.currentThread().getName());
                         emitter.onNext("Delay Message");
                         emitter.onComplete();
                     }
@@ -63,29 +66,32 @@ public class DelayExample {
         Log.d(TAG, "test,<-- ");
     }
 
-    // Recommended : Do the work -> then after 5 seconds -> emit the result
-    public static void way2() {
+    // Recommended : do the work, emit the onNext/onComplete -> after 5 seconds -> receive onNext/onComplete
+    public static void way2_onNext_onComplete() {
         Log.d(TAG, "test,--> ");
         /*
+        2022-10-17 15:49:22.845 9363-9363/D/DelayExample: test,-->
+        2022-10-17 15:49:22.860 9363-9363/D/DelayExample: test,<--
+        2022-10-17 15:49:22.863 9363-9394/D/DelayExample: apply: 0,RxCachedThreadScheduler-1
+        2022-10-17 15:49:22.864 9363-9394/D/DelayExample: emit - onNext: 0,RxCachedThreadScheduler-1
+        2022-10-17 15:49:22.864 9363-9394/D/DelayExample: emit - onComplete: RxCachedThreadScheduler-1
 
-        2022-10-17 14:36:05.246 6832-6832/D/DelayExample: test,-->
-        2022-10-17 14:36:05.294 6832-6832/D/DelayExample: test,<--
-        2022-10-17 14:36:05.299 6832-6864/D/DelayExample: send - apply: 0,RxCachedThreadScheduler-1
-        2022-10-17 14:36:05.301 6832-6864/D/DelayExample: send - subscribe: 0,RxCachedThreadScheduler-1
-
-        2022-10-17 14:36:10.303 6832-6866/D/DelayExample: Received:0,RxSingleScheduler-1
+        2022-10-17 15:49:27.870 9363-9397/D/DelayExample: Received:onNext,0,RxSingleScheduler-1
+        2022-10-17 15:49:27.870 9363-9397/D/DelayExample: Received:onComplete,RxSingleScheduler-1
          */
         Observable.just(0)
                 .flatMap(new Function<Integer, ObservableSource<String>>() {
                     @Override
                     public ObservableSource<String> apply(Integer integer) throws Exception {
-                        Log.d(TAG, "send - apply: " + integer + "," + Thread.currentThread().getName());
+                        Log.d(TAG, "apply: " + integer + "," + Thread.currentThread().getName());
                         // Do the work, and get the result
                         return Observable.create(new ObservableOnSubscribe<String>() {
                             @Override
                             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                                Log.d(TAG, "send - subscribe: " + integer + "," + Thread.currentThread().getName());
+                                Log.d(TAG, "emit - onNext: " + integer + "," + Thread.currentThread().getName());
+                                Log.d(TAG, "emit - onComplete:" + Thread.currentThread().getName());
                                 emitter.onNext(String.valueOf(integer));
+                                emitter.onComplete();
                             }
                         });
                     }
@@ -95,27 +101,36 @@ public class DelayExample {
                 .observeOn(Schedulers.single())
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(String s) throws Exception {
-                        Log.d(TAG, "Received:" + s + "," + Thread.currentThread().getName());
+                    public void accept(String onNext) throws Exception {
+                        Log.d(TAG, "Received:onNext," + onNext + "," + Thread.currentThread().getName());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "Received:onError," + throwable.getMessage() + "," + Thread.currentThread().getName());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "Received:onComplete," + Thread.currentThread().getName());
                     }
                 });
         Log.d(TAG, "test,<-- ");
     }
 
-    // Depressed : After 5 seconds -> do the work, then  emit the result
-    // This way works as same as timer
-    public static void way3() {
+    // Recommended : Do the work, emit the onError -> immediately -> receive onError
+    public static void way2_emit_onError() {
         Log.d(TAG, "test,--> ");
         /*
-        2022-10-17 14:38:34.036 7093-7093/D/DelayExample: test,-->
-        2022-10-17 14:38:34.052 7093-7093/D/DelayExample: test,<--
+        2022-10-17 15:54:25.469 9738-9738/D/DelayExample: test,-->
+        2022-10-17 15:54:25.485 9738-9738/D/DelayExample: test,<--
+        2022-10-17 15:54:25.488 9738-9776/D/DelayExample: send - apply: 0,RxCachedThreadScheduler-1
+        2022-10-17 15:54:25.494 9738-9776/D/DelayExample: emit - onNext: 0,RxCachedThreadScheduler-1
+        2022-10-17 15:54:25.494 9738-9776/D/DelayExample: emit - onError: RxCachedThreadScheduler-1
 
-        2022-10-17 14:38:39.058 7093-7126/D/DelayExample: send - apply: 0,RxComputationThreadPool-1
-        2022-10-17 14:38:39.059 7093-7126/D/DelayExample: send - subscribe: 0,RxComputationThreadPool-1
-        2022-10-17 14:38:39.061 7093-7127/D/DelayExample: Received:0,RxSingleScheduler-1
+        2022-10-17 15:54:25.500 9738-9778/D/DelayExample: Received:onError,Delay error,RxSingleScheduler-1
          */
         Observable.just(0)
-                .delay(5, TimeUnit.SECONDS)
                 .flatMap(new Function<Integer, ObservableSource<String>>() {
                     @Override
                     public ObservableSource<String> apply(Integer integer) throws Exception {
@@ -124,8 +139,64 @@ public class DelayExample {
                         return Observable.create(new ObservableOnSubscribe<String>() {
                             @Override
                             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                                Log.d(TAG, "send - subscribe: " + integer + "," + Thread.currentThread().getName());
+                                Log.d(TAG, "emit - onNext: " + integer + "," + Thread.currentThread().getName());
+                                Log.d(TAG, "emit - onError: " + Thread.currentThread().getName());
                                 emitter.onNext(String.valueOf(integer));
+                                emitter.onError(new Exception("Delay error"));
+                            }
+                        });
+                    }
+                })
+                .delay(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.single())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String onNext) throws Exception {
+                        Log.d(TAG, "Received:onNext," + onNext + "," + Thread.currentThread().getName());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "Received:onError," + throwable.getMessage() + "," + Thread.currentThread().getName());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "Received:onComplete," + Thread.currentThread().getName());
+                    }
+                });
+        Log.d(TAG, "test,<-- ");
+    }
+
+    // Depressed : After 5 seconds -> do the work, then  emit the onNext / onComplete
+    // This way works as same as timer
+    public static void way3_emit_onNext_onComplete() {
+        Log.d(TAG, "test,--> ");
+        /*
+        2022-10-17 16:01:53.456 10144-10144/D/DelayExample: test,-->
+        2022-10-17 16:01:53.469 10144-10144/D/DelayExample: test,<--
+
+        2022-10-17 16:01:58.475 10144-10175/D/DelayExample: apply: 0,RxComputationThreadPool-1
+        2022-10-17 16:01:58.479 10144-10175/D/DelayExample: emit - onNext: 0,RxComputationThreadPool-1
+        2022-10-17 16:01:58.479 10144-10175/D/DelayExample: emit - onComplete: ,RxComputationThreadPool-1
+        2022-10-17 16:01:58.482 10144-10176/D/DelayExample: Received:onNext,0,RxSingleScheduler-1
+        2022-10-17 16:01:58.482 10144-10176/D/DelayExample: Received:onComplete,RxSingleScheduler-1
+         */
+        Observable.just(0)
+                .delay(5, TimeUnit.SECONDS)
+                .flatMap(new Function<Integer, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(Integer integer) throws Exception {
+                        Log.d(TAG, "apply: " + integer + "," + Thread.currentThread().getName());
+                        // Do the work, and get the result
+                        return Observable.create(new ObservableOnSubscribe<String>() {
+                            @Override
+                            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                                Log.d(TAG, "emit - onNext: " + integer + "," + Thread.currentThread().getName());
+                                Log.d(TAG, "emit - onComplete: " + "," + Thread.currentThread().getName());
+                                emitter.onNext(String.valueOf(integer));
+                                emitter.onComplete();
                             }
                         });
                     }
@@ -134,8 +205,66 @@ public class DelayExample {
                 .observeOn(Schedulers.single())
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(String s) throws Exception {
-                        Log.d(TAG, "Received:" + s + "," + Thread.currentThread().getName());
+                    public void accept(String onNext) throws Exception {
+                        Log.d(TAG, "Received:onNext," + onNext + "," + Thread.currentThread().getName());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "Received:onError," + throwable.getMessage() + "," + Thread.currentThread().getName());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "Received:onComplete," + Thread.currentThread().getName());
+                    }
+                });
+        Log.d(TAG, "test,<-- ");
+    }
+
+    // Depressed : After 5 seconds -> do the work, then emit onError
+    public static void way3_onError() {
+        Log.d(TAG, "test,--> ");
+        /*
+        2022-10-17 16:35:01.670 10475-10475/D/DelayExample: test,-->
+        2022-10-17 16:35:01.683 10475-10475/D/DelayExample: test,<--
+
+        2022-10-17 16:35:06.692 10475-10507/D/DelayExample: apply: 0,RxComputationThreadPool-1
+        2022-10-17 16:35:06.694 10475-10507/D/DelayExample: emit onError: 0,RxComputationThreadPool-1
+        2022-10-17 16:35:06.699 10475-10508/D/DelayExample: Received:onError,Delay error,RxSingleScheduler-1s
+         */
+        Observable.just(0)
+                .delay(5, TimeUnit.SECONDS)
+                .flatMap(new Function<Integer, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(Integer integer) throws Exception {
+                        Log.d(TAG, "apply: " + integer + "," + Thread.currentThread().getName());
+                        // Do the work, and get the result
+                        return Observable.create(new ObservableOnSubscribe<String>() {
+                            @Override
+                            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                                Log.d(TAG, "emit onError: " + integer + "," + Thread.currentThread().getName());
+                                emitter.onError(new Exception("Delay error"));
+                            }
+                        });
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.single())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String onNext) throws Exception {
+                        Log.d(TAG, "Received:onNext," + onNext + "," + Thread.currentThread().getName());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "Received:onError," + throwable.getMessage() + "," + Thread.currentThread().getName());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "Received:onComplete," + Thread.currentThread().getName());
                     }
                 });
         Log.d(TAG, "test,<-- ");

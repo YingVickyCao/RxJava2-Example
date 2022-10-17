@@ -249,7 +249,10 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 
 ```
 // Recommended
-// Way 1:do the work -> after 5 seconds -> emit the result
+// Way 1:do the work, emit the onNext/onComplete -> after 5 seconds -> receive onNext/onComplete
+// OR
+// Do the work, emit the onError -> immediately -> receive onError
+
 .//Work
 .delay(5, TimeUnit.SECONDS)
 .subscribe()
@@ -257,7 +260,7 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 
 ```
 // Depressed :
-// Way 2:After 5 seconds -> do the work, then  emit the result
+// Way 2:After 5 seconds -> do the work, then  emit the onNext/onComplete/onError result
 .delay(5, TimeUnit.SECONDS)
 . // Work
 .subscribe()
@@ -270,20 +273,23 @@ Flowable.interval(10, 1, TimeUnit.SECONDS) //  先延迟10s，再发送心跳
 [Code: TimerExample](./RxJava2-android/app/src/main/java/com/hades/android/example/rxjava2/_3_op/TimerExample.java)
 
 - When is used?  
-   do the work after a certain amount of time, and then emit the value to subscriber
+   do the work after a certain amount of time, and then emit the onNext result to subscriber
 
-  ```
-  // After 5 seconds -> do the work, then  emit the result
+```
+  // After 5 seconds -> do the work, then  emit the onNex/onComplete/onError
   .Observable.timer(5, TimeUnit.SECONDS)
   . // Work
   .subscribe()
-  ```
-
 ```
+
 - subscribeOn default is Schedulers.computation(),if set others, not works.
 
 # Refs
 
 - https://gank.io/post/560e15be2dca930e00da1083#toc_2
 - [Timer, Delay, and Interval Operators](https://blog.mindorks.com/understanding-rxjava-timer-delay-and-interval-operators)
+
+```
+
+- [Timer, Delay, and Interval Operators](https://www.jianshu.com/p/6db5d213c9c6)
 ```
